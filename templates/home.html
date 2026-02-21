@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetMaster Pro - Intelligent Fleet Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --dark-bg: #1a252f;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white !important;
+            letter-spacing: 1px;
+        }
+
+        .navbar-brand i {
+            font-size: 2rem;
+            margin-right: 10px;
+            color: #ffd700;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .btn-login {
+            background: white;
+            color: var(--primary-color) !important;
+            border-radius: 25px;
+            padding: 8px 25px !important;
+            font-weight: 600;
+        }
+
+        .btn-login:hover {
+            background: #ffd700;
+            color: var(--primary-color) !important;
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 100px 0;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,170.7C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            opacity: 0.1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero-stats {
+            margin-top: 50px;
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffd700;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 80px 0;
+            background: var(--light-bg);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            height: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            line-height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 50%;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .feature-card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .feature-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .feature-link:hover {
+            color: var(--primary-color);
+            letter-spacing: 1px;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .step-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            background: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+
+        .step-item h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .step-item p {
+            color: #666;
+        }
+
+        /* Dashboard Preview */
+        .dashboard-preview {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .preview-image {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .preview-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .preview-stat {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .preview-stat i {
+            font-size: 2rem;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            padding: 80px 0;
+            background: var(--light-bg);
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            margin: 15px;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 15px;
+        }
+
+        .author-info h5 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .author-info p {
+            margin: 0;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 80px 0;
+            background: white;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-10px);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: var(--secondary-color);
+            color: white;
+            padding: 8px 40px;
+            transform: rotate(45deg);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .pricing-header {
+            margin-bottom: 30px;
+        }
+
+        .pricing-header h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 20px 0;
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+            color: #999;
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 30px 0;
+        }
+
+        .pricing-features li {
+            padding: 10px 0;
+            color: #666;
+        }
+
+        .pricing-features i {
+            color: var(--secondary-color);
+            margin-right: 10px;
+        }
+
+        .btn-pricing {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-pricing:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52,152,219,0.3);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-bg));
+            color: white;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .btn-cta {
+            background: #ffd700;
+            color: var(--primary-color) !important;
+            border: none;
+            padding: 15px 50px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.3);
+        }
+
+        .btn-cta-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            padding: 15px 50px;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-cta-outline:hover {
+            background: white;
+            color: var(--primary-color) !important;
+            transform: translateY(-3px);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark-bg);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer h5 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #ffd700;
+            padding-left: 5px;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+
+        .social-links a:hover {
+            background: #ffd700;
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-stats .col-md-3 {
+                margin-bottom: 15px;
+            }
+            
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+            
+            .btn-cta, .btn-cta-outline {
+                display: block;
+                margin: 10px auto;
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                <i class="bi bi-truck"></i> FleetMaster Pro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#pricing">Pricing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonials">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn-login" href="{{ url_for('login') }}">
+                            <i class="bi bi-box-arrow-in-right"></i> Login
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" style="margin-top: 76px;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">Transform Your Fleet Operations with Intelligence</h1>
+                    <p class="hero-subtitle">Replace inefficient manual logbooks with a centralized, rule-based digital hub that optimizes fleet lifecycle, monitors driver safety, and tracks financial performance in real-time.</p>
+                    <div class="d-flex gap-3">
+                        <a href="{{ url_for('login') }}" class="btn btn-cta">
+                            <i class="bi bi-rocket-takeoff"></i> Get Started
+                        </a>
+                        <a href="#features" class="btn btn-cta-outline">
+                            <i class="bi bi-play-circle"></i> Watch Demo
+                        </a>
+                    </div>
+                    
+                    <div class="hero-stats">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <div class="stat-number">10K+</div>
+                                    <div class="stat-label">Vehicles Managed</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <div class="stat-number">98%</div>
+                                    <div class="stat-label">Client Satisfaction</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <div class="stat-number">30%</div>
+                                    <div class="stat-label">Cost Reduction</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="floating">
+                        <img src="{{ url_for('static', filename='/img/image.png') }}" 
+             alt="Dashboard Preview" 
+             class="img-fluid rounded-3 shadow-lg">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Powerful Features for Complete Fleet Management</h2>
+                <p>Everything you need to manage your fleet efficiently in one centralized platform</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <h3>Vehicle Registry</h3>
+                        <p>Complete asset management with CRUD operations, status tracking, and lifecycle management for all your vehicles.</p>
+                        <a href="#" class="feature-link">Learn More <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-map"></i>
+                        </div>
+                        <h3>Trip Dispatcher</h3>
+                        <p>Intelligent trip planning with automatic capacity validation, driver assignment, and real-time status tracking.</p>
+                        <a href="#" class="feature-link">Learn More <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <h3>Maintenance Logs</h3>
+                        <p>Preventative and reactive maintenance tracking with automatic vehicle status updates and service reminders.</p>
+                        <a href="#" class="feature-link">Learn More <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <h3>Driver Management</h3>
+                        <p>Comprehensive driver profiles with license tracking, safety scores, and performance monitoring.</p>
+                        <a href="#" class="feature-link">Learn More <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                        <h3>Financial Tracking</h3>
+                        <p>Automated cost calculation per vehicle, fuel efficiency tracking, and comprehensive expense management.</p>
+                        <a href="#" class="feature-link">Learn More <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                        <h3>Analytics & Reports</h3>
+                        <p>Data-driven insights with ROI calculations, fuel efficiency metrics, and one-click CSV/PDF exports.</p>
+                        <a href="#" class="feature-link">Learn More <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>How FleetMaster Pro Works</h2>
+                <p>Simple, intuitive workflow that transforms your fleet operations</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <h4>Register Assets</h4>
+                        <p>Add your vehicles, drivers, and equipment to the system with detailed specifications</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <h4>Create Trips</h4>
+                        <p>Plan and dispatch trips with automatic validation of cargo weight and driver availability</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <h4>Track Operations</h4>
+                        <p>Monitor vehicle status, maintenance needs, and driver performance in real-time</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <h4>Analyze & Optimize</h4>
+                        <p>Generate reports, analyze costs, and make data-driven decisions to improve efficiency</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="dashboard-preview">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="display-5 fw-bold mb-4">Command Center at Your Fingertips</h2>
+                    <p class="lead mb-4">Get real-time visibility into your entire fleet operations with our intuitive dashboard.</p>
+                    
+                    <div class="preview-stats">
+                        <div class="preview-stat">
+                            <i class="bi bi-truck"></i>
+                            <h4>Active Fleet</h4>
+                            <p>Real-time vehicle tracking</p>
+                        </div>
+                        <div class="preview-stat">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <h4>Maintenance Alerts</h4>
+                            <p>Instant notifications</p>
+                        </div>
+                        <div class="preview-stat">
+                            <i class="bi bi-pie-chart"></i>
+                            <h4>Utilization Rate</h4>
+                            <p>Fleet efficiency metrics</p>
+                        </div>
+                        <div class="preview-stat">
+                            <i class="bi bi-box"></i>
+                            <h4>Pending Cargo</h4>
+                            <p>Shipment tracking</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="preview-image">
+                        <img src="{{ url_for('static', filename='/img/screenshot 2026-02-21 162207.png') }}" alt="Dashboard Preview" class="img-fluid rounded-3">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>What Our Clients Say</h2>
+                <p>Trusted by fleet managers worldwide</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            <i class="bi bi-quote fs-1 text-primary opacity-25"></i>
+                            <p class="mb-0">"FleetMaster Pro has revolutionized how we manage our delivery fleet. We've reduced administrative work by 80% and improved vehicle utilization by 35%."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">JD</div>
+                            <div class="author-info">
+                                <h5>John Davis</h5>
+                                <p>Fleet Manager, Logistics Corp</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            <i class="bi bi-quote fs-1 text-primary opacity-25"></i>
+                            <p class="mb-0">"The driver safety features and license tracking have been invaluable. We've seen a 50% reduction in compliance issues since implementation."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">SR</div>
+                            <div class="author-info">
+                                <h5>Sarah Roberts</h5>
+                                <p>Safety Officer, Transport Solutions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="testimonial-card">
+                        <div class="testimonial-text">
+                            <i class="bi bi-quote fs-1 text-primary opacity-25"></i>
+                            <p class="mb-0">"The financial analytics and ROI tracking have helped us optimize our fleet composition and reduce operational costs by 25% annually."</p>
+                        </div>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">MC</div>
+                            <div class="author-info">
+                                <h5>Michael Chen</h5>
+                                <p>Financial Analyst, Express Delivery</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Simple, Transparent Pricing</h2>
+                <p>Choose the plan that fits your fleet size</p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3>Starter</h3>
+                            <div class="pricing-price">
+                                $49<span>/month</span>
+                            </div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="bi bi-check-circle"></i> Up to 10 vehicles</li>
+                            <li><i class="bi bi-check-circle"></i> Basic fleet tracking</li>
+                            <li><i class="bi bi-check-circle"></i> Driver management</li>
+                            <li><i class="bi bi-check-circle"></i> Maintenance logs</li>
+                            <li><i class="bi bi-x-circle text-danger"></i> Advanced analytics</li>
+                            <li><i class="bi bi-x-circle text-danger"></i> API access</li>
+                        </ul>
+                        <a href="{{ url_for('login') }}" class="btn btn-pricing">Get Started</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="pricing-card featured">
+                        <div class="pricing-badge">Most Popular</div>
+                        <div class="pricing-header">
+                            <h3>Professional</h3>
+                            <div class="pricing-price">
+                                $99<span>/month</span>
+                            </div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="bi bi-check-circle"></i> Up to 50 vehicles</li>
+                            <li><i class="bi bi-check-circle"></i> Advanced fleet tracking</li>
+                            <li><i class="bi bi-check-circle"></i> Driver performance metrics</li>
+                            <li><i class="bi bi-check-circle"></i> Maintenance scheduling</li>
+                            <li><i class="bi bi-check-circle"></i> Financial reports</li>
+                            <li><i class="bi bi-x-circle text-danger"></i> API access</li>
+                        </ul>
+                        <a href="{{ url_for('login') }}" class="btn btn-pricing">Get Started</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3>Enterprise</h3>
+                            <div class="pricing-price">
+                                $199<span>/month</span>
+                            </div>
+                        </div>
+                        <ul class="pricing-features">
+                            <li><i class="bi bi-check-circle"></i> Unlimited vehicles</li>
+                            <li><i class="bi bi-check-circle"></i> Real-time GPS tracking</li>
+                            <li><i class="bi bi-check-circle"></i> Advanced safety analytics</li>
+                            <li><i class="bi bi-check-circle"></i> Predictive maintenance</li>
+                            <li><i class="bi bi-check-circle"></i> Custom reports</li>
+                            <li><i class="bi bi-check-circle"></i> API access</li>
+                        </ul>
+                        <a href="{{ url_for('login') }}" class="btn btn-pricing">Contact Sales</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Transform Your Fleet Management?</h2>
+            <p class="lead">Join thousands of satisfied fleet managers who have optimized their operations with FleetMaster Pro</p>
+            <div class="mt-4">
+                <a href="{{ url_for('login') }}" class="btn btn-cta">
+                    <i class="bi bi-rocket-takeoff"></i> Start Free Trial
+                </a>
+                <a href="#contact" class="btn btn-cta-outline">
+                    <i class="bi bi-calendar-check"></i> Schedule Demo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5>FleetMaster Pro</h5>
+                    <p class="text-white-50">Intelligent fleet management system that optimizes vehicle lifecycle, driver safety, and financial performance.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-md-2 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="footer-links">
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <h5>Support</h5>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <h5>Contact Info</h5>
+                    <ul class="footer-links">
+                        <li><i class="bi bi-geo-alt"></i> Valsad</li>
+                        <li><i class="bi bi-envelope"></i> info@fleetmasterpro.com</li>
+                        <li><i class="bi bi-telephone"></i> +91 (888) 123-4567</li>
+                        <li><i class="bi bi-clock"></i> Mon-Fri: 9AM - 6PM EST</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 FleetMaster Pro. All rights reserved. | <a href="#" class="text-white-50">Privacy Policy</a> | <a href="#" class="text-white-50">Terms of Service</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar background change on scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.background = 'linear-gradient(135deg, #1a252f, #2c3e50)';
+                navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.2)';
+            } else {
+                navbar.style.background = 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))';
+                navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+            }
+        });
+
+        // Animate stats counter (simplified version)
+        function animateValue(element, start, end, duration) {
+            const range = end - start;
+            const increment = range / (duration / 10);
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= end) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current) + (element.textContent.includes('%') ? '%' : '+');
+            }, 10);
+        }
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                    
+                    // Animate stats if they're in view
+                    if (entry.target.classList.contains('stat-number')) {
+                        const value = parseInt(entry.target.textContent);
+                        if (!isNaN(value)) {
+                            animateValue(entry.target, 0, value, 2000);
+                        }
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+
+        // Observe all stat numbers
+        document.querySelectorAll('.stat-number').forEach(stat => {
+            observer.observe(stat);
+        });
+    </script>
+</body>
+</html>

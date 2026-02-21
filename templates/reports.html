@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics & Reports{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Operational Analytics</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportReport('fuel_efficiency')">
+                <i class="bi bi-download"></i> Export Fuel Report
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportReport('maintenance')">
+                <i class="bi bi-download"></i> Export Maintenance
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportReport('financial')">
+                <i class="bi bi-download"></i> Export Financial
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Fuel Efficiency Report -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5><i class="bi bi-speedometer2"></i> Fuel Efficiency (km/L)</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Vehicle</th>
+                        <th>License Plate</th>
+                        <th>Total Fuel (L)</th>
+                        <th>Distance Traveled (km)</th>
+                        <th>Efficiency (km/L)</th>
+                        <th>Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in fuel_efficiency %}
+                    <tr>
+                        <td>{{ vehicle.name }}</td>
+                        <td>{{ vehicle.license_plate }}</td>
+                        <td>{{ "%.2f"|format(vehicle.total_fuel) }}</td>
+                        <td>{{ vehicle.distance_traveled }}</td>
+                        <td><strong>{{ "%.2f"|format(vehicle.fuel_efficiency) }}</strong></td>
+                        <td>
+                            {% if vehicle.fuel_efficiency >= 10 %}
+                            <span class="badge bg-success">Excellent</span>
+                            {% elif vehicle.fuel_efficiency >= 7 %}
+                            <span class="badge bg-info">Good</span>
+                            {% elif vehicle.fuel_efficiency >= 4 %}
+                            <span class="badge bg-warning">Average</span>
+                            {% else %}
+                            <span class="badge bg-danger">Poor</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No fuel efficiency data available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Vehicle ROI -->
+<div class="card">
+    <div class="card-header">
+        <h5><i class="bi bi-graph-up-arrow"></i> Vehicle ROI Analysis</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Vehicle</th>
+                        <th>Acquisition Cost</th>
+                        <th>Total Revenue</th>
+                        <th>Fuel Cost</th>
+                        <th>Maintenance</th>
+                        <th>Other Expenses</th>
+                        <th>Net Profit</th>
+                        <th>ROI %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicle_roi %}
+                    <tr>
+                        <td>{{ vehicle.name }}<br><small>{{ vehicle.license_plate }}</small></td>
+                        <td>${{ "%.2f"|format(vehicle.acquisition_cost) }}</td>
+                        <td>${{ "%.2f"|format(vehicle.total_revenue) }}</td>
+                        <td>${{ "%.2f"|format(vehicle.total_fuel_cost) }}</td>
+                        <td>${{ "%.2f"|format(vehicle.total_maintenance_cost) }}</td>
+                        <td>${{ "%.2f"|format(vehicle.total_expenses) }}</td>
+                        <td>
+                            {% set net_profit = vehicle.total_revenue - vehicle.total_fuel_cost - vehicle.total_maintenance_cost - vehicle.total_expenses %}
+                            ${{ "%.2f"|format(net_profit) }}
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if vehicle.roi_percentage >= 20 %}success{% elif vehicle.roi_percentage >= 0 %}info{% else %}danger{% endif %}">
+                                {{ "%.2f"|format(vehicle.roi_percentage) }}%
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">No ROI data available</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportReport(type) {
+    window.location.href = "{{ url_for('export_report', report_type='') }}" + type;
+}
+</script>
+{% endblock %}

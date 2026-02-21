@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Trip Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Trip Dispatcher</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTripModal">
+            <i class="bi bi-plus-circle"></i> Create New Trip
+        </button>
+    </div>
+</div>
+
+<!-- Trips Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Vehicle</th>
+                        <th>Driver</th>
+                        <th>Cargo</th>
+                        <th>Weight (kg)</th>
+                        <th>Route</th>
+                        <th>Revenue</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trip in trips %}
+                    <tr>
+                        <td>#{{ trip.id }}</td>
+                        <td>{{ trip.vehicle_name }}</td>
+                        <td>{{ trip.driver_name }}</td>
+                        <td>{{ trip.cargo_description[:30] }}...</td>
+                        <td>{{ trip.cargo_weight }}</td>
+                        <td>{{ trip.origin }} → {{ trip.destination }}</td>
+                        <td>${{ "%.2f"|format(trip.revenue) }}</td>
+                        <td>
+                            <span class="badge bg-{% if trip.status == 'Completed' %}success{% elif trip.status == 'Draft' %}secondary{% elif trip.status == 'Dispatched' %}primary{% elif trip.status == 'Cancelled' %}danger{% else %}warning{% endif %}">
+                                {{ trip.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ url_for('update_trip_status', trip_id=trip.id) }}" class="d-inline">
+                                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="Draft" {% if trip.status == 'Draft' %}selected{% endif %}>Draft</option>
+                                    <option value="Dispatched" {% if trip.status == 'Dispatched' %}selected{% endif %}>Dispatched</option>
+                                    <option value="Completed" {% if trip.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                    <option value="Cancelled" {% if trip.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center">No trips found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Trip Modal -->
+<div class="modal fade" id="addTripModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Trip</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_trip') }}">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Select Vehicle</label>
+                            <select class="form-select" name="vehicle_id" required>
+                                <option value="">Choose vehicle...</option>
+                                {% for vehicle in vehicles %}
+                                <option value="{{ vehicle.id }}" data-capacity="{{ vehicle.max_capacity }}">
+                                    {{ vehicle.name }} ({{ vehicle.license_plate }}) - Cap: {{ vehicle.max_capacity }}kg - {{ vehicle.status }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Select Driver</label>
+                            <select class="form-select" name="driver_id" required>
+                                <option value="">Choose driver...</option>
+                                {% for driver in drivers %}
+                                <option value="{{ driver.id }}">
+                                    {{ driver.name }} - License: {{ driver.license_number }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Cargo Weight (kg)</label>
+                            <input type="number" class="form-control" name="cargo_weight" step="0.01" required 
+                                   onchange="validateCapacity(this)">
+                            <small class="text-muted" id="capacityWarning" style="color: red; display: none;">
+                                Warning: Exceeds vehicle capacity!
+                            </small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Cargo Description</label>
+                            <input type="text" class="form-control" name="cargo_description" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Origin</label>
+                            <input type="text" class="form-control" name="origin" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Destination</label>
+                            <input type="text" class="form-control" name="destination" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Distance (km)</label>
+                            <input type="number" class="form-control" name="distance" step="0.01" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Revenue ($)</label>
+                            <input type="number" class="form-control" name="revenue" step="0.01" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Trip</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function validateCapacity(input) {
+    const vehicleSelect = document.querySelector('select[name="vehicle_id"]');
+    const selectedOption = vehicleSelect.options[vehicleSelect.selectedIndex];
+    
+    if (selectedOption.value) {
+        const capacity = selectedOption.dataset.capacity;
+        const weight = parseFloat(input.value);
+        const warning = document.getElementById('capacityWarning');
+        
+        if (weight > capacity) {
+            warning.style.display = 'block';
+            warning.textContent = `Warning: Exceeds vehicle capacity by ${weight - capacity} kg!`;
+        } else {
+            warning.style.display = 'none';
+        }
+    }
+}
+</script>
+{% endblock %}

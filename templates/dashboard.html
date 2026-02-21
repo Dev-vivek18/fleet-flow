@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Command Center</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="location.reload()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Active Fleet</h6>
+                    <h2 class="mb-0">{{ active_fleet }}</h2>
+                    <small class="text-success">Currently on trip</small>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-truck"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Maintenance Alerts</h6>
+                    <h2 class="mb-0">{{ in_shop }}</h2>
+                    <small class="text-warning">Vehicles in shop</small>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Utilization Rate</h6>
+                    <h2 class="mb-0">{{ utilization_rate }}%</h2>
+                    <small class="text-info">Fleet assigned</small>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-pie-chart"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="stat-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-muted mb-2">Pending Cargo</h6>
+                    <h2 class="mb-0">{{ pending_cargo }}</h2>
+                    <small class="text-primary">Awaiting dispatch</small>
+                </div>
+                <div class="stat-icon">
+                    <i class="bi bi-box"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title"><i class="bi bi-funnel"></i> Filters</h5>
+        <div class="row">
+            <div class="col-md-3">
+                <select class="form-select" id="vehicleType">
+                    <option value="">All Vehicle Types</option>
+                    <option value="Truck">Truck</option>
+                    <option value="Van">Van</option>
+                    <option value="Bike">Bike</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="status">
+                    <option value="">All Status</option>
+                    <option value="Available">Available</option>
+                    <option value="On Trip">On Trip</option>
+                    <option value="In Shop">In Shop</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="region">
+                    <option value="">All Regions</option>
+                    <option value="North">North</option>
+                    <option value="South">South</option>
+                    <option value="East">East</option>
+                    <option value="West">West</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100" onclick="applyFilters()">
+                    <i class="bi bi-search"></i> Apply Filters
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Trips -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Trips</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Vehicle</th>
+                        <th>Driver</th>
+                        <th>Origin</th>
+                        <th>Destination</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trip in recent_trips %}
+                    <tr>
+                        <td>{{ trip.vehicle_name }}</td>
+                        <td>{{ trip.driver_name }}</td>
+                        <td>{{ trip.origin }}</td>
+                        <td>{{ trip.destination }}</td>
+                        <td>
+                            <span class="badge bg-{% if trip.status == 'Completed' %}success{% elif trip.status == 'Draft' %}secondary{% elif trip.status == 'Dispatched' %}primary{% else %}warning{% endif %}">
+                                {{ trip.status }}
+                            </span>
+                        </td>
+                        <td>{{ trip.created_at[:10] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No recent trips found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Maintenance Alerts -->
+<!-- Maintenance Alerts -->
+{% if maintenance_alerts %}
+<div class="card mt-4">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0"><i class="bi bi-exclamation-circle"></i> Upcoming Maintenance</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Vehicle</th>
+                        <th>Service Type</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alert in maintenance_alerts %}
+                    <tr>
+                        <td>
+                            <strong>{{ alert.name }}</strong><br>
+                            <small class="text-muted">{{ alert.license_plate }}</small>
+                        </td>
+                        <td>{{ alert.service_type }}</td>
+                        <td>{{ alert.next_service_date }}</td>
+                        <td>
+                            {% set days = days_until(alert.next_service_date) %}
+                            {% if days is not none %}
+                                {% if days < 0 %}
+                                    <span class="badge bg-danger">Overdue by {{ -days }} days</span>
+                                {% elif days == 0 %}
+                                    <span class="badge bg-warning">Due Today</span>
+                                {% elif days <= 3 %}
+                                    <span class="badge bg-danger">Due in {{ days }} days</span>
+                                {% elif days <= 7 %}
+                                    <span class="badge bg-warning">Due in {{ days }} days</span>
+                                {% else %}
+                                    <span class="badge bg-info">Due in {{ days }} days</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-secondary">Date unavailable</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card mt-4">
+    <div class="card-body">
+        <p class="text-muted text-center mb-0">No upcoming maintenance alerts</p>
+    </div>
+</div>
+{% endif %}
+<script>
+function applyFilters() {
+    const vehicleType = document.getElementById('vehicleType').value;
+    const status = document.getElementById('status').value;
+    const region = document.getElementById('region').value;
+    
+    // In a real app, this would trigger an API call to filter data
+    console.log('Filters:', {vehicleType, status, region});
+    alert('Filter functionality would refresh data based on selections');
+}
+</script>
+{% endblock %}

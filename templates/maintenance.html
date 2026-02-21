@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Maintenance Logs{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Maintenance & Service Logs</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMaintenanceModal">
+            <i class="bi bi-plus-circle"></i> Log Maintenance
+        </button>
+    </div>
+</div>
+
+<!-- Maintenance Logs Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Vehicle</th>
+                        <th>Service Date</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Cost</th>
+                        <th>Vendor</th>
+                        <th>Next Service</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in maintenance_logs %}
+                    <tr>
+                        <td>{{ log.vehicle_name }}<br><small>{{ log.license_plate }}</small></td>
+                        <td>{{ log.service_date }}</td>
+                        <td>
+                            <span class="badge bg-{% if log.service_type == 'Preventative' %}info{% else %}warning{% endif %}">
+                                {{ log.service_type }}
+                            </span>
+                        </td>
+                        <td>{{ log.description[:30] }}...</td>
+                        <td>${{ "%.2f"|format(log.cost) }}</td>
+                        <td>{{ log.vendor }}</td>
+                        <td>{{ log.next_service_date or 'N/A' }}</td>
+                        <td>
+                            {% if log.next_service_date and log.next_service_date < now %}
+                            <span class="badge bg-danger">Overdue</span>
+                            {% else %}
+                            <span class="badge bg-success">Current</span>
+                            {% endif %}
+                        </td>
+                        <td>
+    {% if log.next_service_date %}
+        {% set days = days_until(log.next_service_date) %}
+        {% if days is not none and days < 0 %}
+        <span class="badge bg-danger">Overdue by {{ -days }} days</span>
+        {% elif days is not none and days == 0 %}
+        <span class="badge bg-warning">Due Today</span>
+        {% elif days is not none %}
+        <span class="badge bg-success">Due in {{ days }} days</span>
+        {% else %}
+        <span class="badge bg-secondary">N/A</span>
+        {% endif %}
+    {% else %}
+    <span class="badge bg-secondary">No Schedule</span>
+    {% endif %}
+</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('complete_maintenance', maintenance_id=log.id) }}" class="d-inline">
+                                <input type="hidden" name="vehicle_id" value="{{ log.vehicle_id }}">
+                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Mark maintenance as complete?')">
+                                    <i class="bi bi-check-circle"></i> Complete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center">No maintenance logs found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Maintenance Modal -->
+<div class="modal fade" id="addMaintenanceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Log Maintenance</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_maintenance') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Select Vehicle</label>
+                        <select class="form-select" name="vehicle_id" required>
+                            <option value="">Choose vehicle...</option>
+                            {% for vehicle in vehicles %}
+                            <option value="{{ vehicle.id }}">
+                                {{ vehicle.name }} ({{ vehicle.license_plate }}) - {{ vehicle.status }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Service Date</label>
+                        <input type="date" class="form-control" name="service_date" value="{{ now }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Service Type</label>
+                        <select class="form-select" name="service_type" required>
+                            <option value="Preventative">Preventative Maintenance</option>
+                            <option value="Reactive">Reactive/Repair</option>
+                            <option value="Inspection">Inspection</option>
+                            <option value="Tire">Tire Service</option>
+                            <option value="Oil">Oil Change</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Cost ($)</label>
+                        <input type="number" class="form-control" name="cost" step="0.01" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Vendor/Service Center</label>
+                        <input type="text" class="form-control" name="vendor" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Next Service Date (if applicable)</label>
+                        <input type="date" class="form-control" name="next_service_date">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Log Maintenance</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

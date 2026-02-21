@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Driver Profiles{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Driver Performance & Safety</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDriverModal">
+            <i class="bi bi-plus-circle"></i> Add Driver
+        </button>
+    </div>
+</div>
+
+<!-- Drivers Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>License #</th>
+                        <th>License Expiry</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Safety Score</th>
+                        <th>Trips Completed</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for driver in drivers %}
+                    <tr>
+                        <td>{{ driver.name }}</td>
+                        <td>{{ driver.license_number }}</td>
+                        <td>
+    {{ driver.license_expiry }}
+    {% if is_expired(driver.license_expiry) %}
+    <span class="badge bg-danger">Expired!</span>
+    {% elif days_until(driver.license_expiry) is not none and days_until(driver.license_expiry) <= 30 %}
+    <span class="badge bg-warning">Expiring Soon ({{ days_until(driver.license_expiry) }} days)</span>
+    {% endif %}
+</td>
+                        <td>{{ driver.phone }}</td>
+                        <td>
+                            <span class="badge bg-{% if driver.status == 'On Duty' %}success{% elif driver.status == 'Off Duty' %}secondary{% else %}danger{% endif %}">
+                                {{ driver.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-{% if driver.safety_score >= 90 %}success{% elif driver.safety_score >= 70 %}warning{% else %}danger{% endif %}" 
+                                     role="progressbar" 
+                                     style="width: {{ driver.safety_score }}%"
+                                     aria-valuenow="{{ driver.safety_score }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100">
+                                    {{ driver.safety_score }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ driver.trips_completed }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('update_driver_status', driver_id=driver.id) }}" class="d-inline">
+                                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                    <option value="On Duty" {% if driver.status == 'On Duty' %}selected{% endif %}>On Duty</option>
+                                    <option value="Off Duty" {% if driver.status == 'Off Duty' %}selected{% endif %}>Off Duty</option>
+                                    <option value="Suspended" {% if driver.status == 'Suspended' %}selected{% endif %}>Suspended</option>
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">No drivers found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Driver Modal -->
+<div class="modal fade" id="addDriverModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Driver</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('add_driver') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">License Number</label>
+                        <input type="text" class="form-control" name="license_number" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">License Expiry Date</label>
+                        <input type="date" class="form-control" name="license_expiry" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" name="phone" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Driver</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
